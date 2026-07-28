@@ -1,0 +1,223 @@
+/**
+ * ШКОЛА «СИЛКРОАД» — ПРИЁМНАЯ — стили (Этапы 2–3)
+ *
+ * ДВА СЛОЯ ЦВЕТА, СТРОГО РАЗВЕДЕНЫ (ТЗ 1.1, §4):
+ *  • Брендовый: глубокий синий/индиго #1B3C73–#2456A6 — шапка, кнопки, акценты;
+ *    холодный светлый фон #F4F7FB; белые карточки с мягкой тенью.
+ *  • Сигнальный (смыслы сверки, единые с реестром) — ТОЛЬКО на белых карточках полей:
+ *    оранжевая рамка — модель сомневается; светло-голубая #cfe2f3 + подпись
+ *    «распознано: „…“» — автоисправлено; жёлтый блок — расхождение родителя.
+ *  Сигнальные цвета в декоре (шапке, кнопках, фоне) НЕ используются.
+ */
+
+:root {
+  /* брендовый слой */
+  --синий-тёмный: #1B3C73;
+  --синий:        #2456A6;
+  --синий-светлый:#E3ECF8;
+  --фон:          #F4F7FB;
+  --карточка:     #FFFFFF;
+  --текст:        #1C2430;
+  --текст-тихий:  #5B6878;
+  --тень: 0 2px 10px rgba(27, 60, 115, 0.10);
+  /* сигнальный слой (только карточки полей) */
+  --сигнал-оранж:      #E8710A;
+  --сигнал-оранж-фон:  #FDF1E4;
+  --сигнал-голубой:    #cfe2f3;
+  --сигнал-голубой-фон:#F2F8FD;
+  --сигнал-жёлтый-фон: #FFF6D8;
+  --сигнал-жёлтый-край:#E7C55A;
+  --ошибка: #B3261E;
+  --ошибка-фон: #FCEEEE;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; } /* атрибут hidden сильнее любых display у классов */
+html { font-size: 17px; }
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  background: var(--фон);
+  color: var(--текст);
+  min-height: 100dvh;
+}
+@media (min-width: 700px) { html { font-size: 19px; } } /* планшет — та же вёрстка крупнее */
+
+/* ── шапка (брендовый слой) ── */
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: linear-gradient(135deg, var(--синий-тёмный), var(--синий));
+  color: #fff;
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  box-shadow: var(--тень);
+}
+.лого { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.2px; }
+.лого small { display: block; font-weight: 500; font-size: 0.72rem; opacity: 0.85; }
+nav { display: flex; gap: 8px; }
+nav button {
+  background: rgba(255,255,255,0.14); color: #fff;
+  border: 1px solid rgba(255,255,255,0.35); border-radius: 10px;
+  padding: 8px 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+}
+nav button.активна { background: #fff; color: var(--синий-тёмный); }
+.бейдж {
+  display: inline-block; min-width: 20px; padding: 1px 6px; margin-left: 4px;
+  background: #fff; color: var(--синий-тёмный);
+  border-radius: 999px; font-size: 0.75rem; font-weight: 800; text-align: center;
+}
+nav button.активна .бейдж { background: var(--синий-тёмный); color: #fff; }
+
+main { max-width: 760px; margin: 0 auto; padding: 16px 14px 40px; }
+
+h1 { font-size: 1.35rem; color: var(--синий-тёмный); margin: 8px 0 14px; }
+h2 { font-size: 1.05rem; color: var(--синий-тёмный); margin: 0 0 10px; }
+.тихо { color: var(--текст-тихий); font-size: 0.85rem; }
+
+/* ── карточки ── */
+.карточка {
+  background: var(--карточка);
+  border-radius: 16px;
+  box-shadow: var(--тень);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+/* ── кнопки (брендовый слой) ── */
+.кнопка {
+  display: block; width: 100%;
+  background: var(--синий); color: #fff;
+  border: 0; border-radius: 14px;
+  padding: 15px 18px;
+  font-size: 1.05rem; font-weight: 700; cursor: pointer;
+  box-shadow: var(--тень);
+}
+.кнопка:active { background: var(--синий-тёмный); }
+.кнопка:disabled { background: #A9B7CC; box-shadow: none; }
+.кнопка.вторичная {
+  background: var(--карточка); color: var(--синий);
+  border: 2px solid var(--синий);
+}
+.кнопка.вторичная:active { background: var(--синий-светлый); }
+.кнопка + .кнопка { margin-top: 10px; }
+
+/* ── поля ввода ── */
+.поле { margin-bottom: 12px; }
+.поле label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--текст-тихий); margin-bottom: 4px; }
+.поле input, .поле select, .поле textarea {
+  width: 100%; padding: 12px; font-size: 1rem; color: var(--текст);
+  border: 2px solid #D5DEEA; border-radius: 10px; background: #fff;
+  appearance: none;
+}
+.поле input:focus, .поле select:focus, .поле textarea:focus {
+  outline: none; border-color: var(--синий);
+}
+.обяз { color: var(--ошибка); }
+
+/* ── сигнальный слой: ТОЛЬКО на карточках полей сверки ── */
+.поле.сомнение input { border-color: var(--сигнал-оранж); background: var(--сигнал-оранж-фон); }
+.поле.сомнение label::after { content: " · сверить в первую очередь"; color: var(--сигнал-оранж); }
+.поле.исправлено input { border-color: var(--сигнал-голубой); border-width: 3px; background: var(--сигнал-голубой-фон); }
+.подпись-исправлено { font-size: 0.78rem; color: var(--текст-тихий); margin-top: 3px; }
+.блок-жёлтый {
+  background: var(--сигнал-жёлтый-фон);
+  border: 1.5px solid var(--сигнал-жёлтый-край);
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 0.88rem; margin-bottom: 12px;
+}
+.блок-ошибка {
+  background: var(--ошибка-фон); color: var(--ошибка);
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 0.88rem; margin-bottom: 12px; white-space: pre-wrap;
+}
+
+/* ── слоты документов ── */
+.слот {
+  border: 2px dashed #C4D1E3; border-radius: 14px;
+  padding: 12px; margin-bottom: 12px; background: #FBFCFE;
+}
+.слот.заполнен { border-style: solid; border-color: var(--синий); }
+.слот-верх { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.слот-название { font-weight: 700; font-size: 0.95rem; }
+.слот-удалить {
+  background: none; border: 0; color: var(--ошибка);
+  font-size: 1.15rem; cursor: pointer; padding: 2px 8px;
+}
+.слот-кнопки { display: flex; gap: 8px; }
+.кнопка-слот {
+  flex: 1; text-align: center; cursor: pointer;
+  background: var(--синий-светлый); color: var(--синий-тёмный);
+  border-radius: 10px; padding: 12px 6px; font-weight: 700; font-size: 0.9rem;
+}
+.кнопка-слот:active { background: #D2E0F3; }
+.превью { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.превью img {
+  width: 74px; height: 74px; object-fit: cover;
+  border-radius: 10px; border: 1px solid #D5DEEA;
+}
+.превью .пдф {
+  width: 74px; height: 74px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; background: var(--синий-светлый); border-radius: 10px;
+}
+.превью-имя { font-size: 0.8rem; color: var(--текст-тихий); word-break: break-all; }
+
+/* переключатель Комплект */
+.переключатель { display: flex; gap: 0; border: 2px solid var(--синий); border-radius: 10px; overflow: hidden; }
+.переключатель button {
+  flex: 1; padding: 12px; border: 0; background: #fff; color: var(--синий);
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+}
+.переключатель button.выбран { background: var(--синий); color: #fff; }
+
+/* ── экран ожидания ── */
+.ожидание { text-align: center; padding: 40px 16px; }
+.волчок {
+  width: 56px; height: 56px; margin: 0 auto 20px;
+  border: 5px solid var(--синий-светлый); border-top-color: var(--синий);
+  border-radius: 50%; animation: вращение 0.9s linear infinite;
+}
+@keyframes вращение { to { transform: rotate(360deg); } }
+.этап-ожидания { font-size: 1.1rem; font-weight: 700; color: var(--синий-тёмный); min-height: 1.5em; }
+.секунды { color: var(--текст-тихий); margin-top: 8px; }
+
+/* ── экран готово ── */
+.готово { text-align: center; padding: 30px 16px; }
+.готово .галка {
+  width: 74px; height: 74px; margin: 0 auto 16px;
+  background: var(--синий); color: #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+}
+
+/* ── статусные плашки ── */
+.плашка {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.3px;
+  background: var(--синий-светлый); color: var(--синий-тёмный);
+}
+.плашка.ошибка { background: var(--ошибка-фон); color: var(--ошибка); }
+
+/* ── очередь ── */
+.элемент-очереди { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.элемент-очереди + .элемент-очереди { border-top: 1px solid #E4EAF2; margin-top: 10px; padding-top: 10px; }
+.элемент-очереди .инфо { font-size: 0.9rem; }
+.элемент-очереди .инфо b { display: block; }
+
+/* ── сообщение-тост ── */
+#тост {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  background: var(--синий-тёмный); color: #fff;
+  padding: 12px 20px; border-radius: 12px; font-size: 0.92rem;
+  box-shadow: var(--тень); max-width: 92vw; text-align: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 50;
+}
+#тост.виден { opacity: 1; }
+
+/* ── вход ── */
+.вход { max-width: 420px; margin: 8vh auto 0; }
+.вход .лого-большой {
+  width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--синий-тёмный), var(--синий));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem; font-weight: 800; box-shadow: var(--тень);
+}

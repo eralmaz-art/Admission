@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1B3C73">
+<title>Приёмная — Школа «Силкроад»</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="лого">СИЛКРОАД<small>приём документов</small></div>
+  <nav>
+    <button id="навСемья" hidden>Новая семья</button>
+    <button id="навОчередь" hidden>Очередь<span id="бейджОчередь" class="бейдж" hidden>0</span></button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ЭКРАН 1: ВХОД -->
+  <section id="экранВход" hidden>
+    <div class="вход">
+      <div class="лого-большой">Ш</div>
+      <div class="карточка">
+        <h1>Вход оператора</h1>
+        <div class="поле">
+          <label for="вводПароля">Пароль</label>
+          <input type="password" id="вводПароля" autocomplete="current-password" inputmode="text">
+        </div>
+        <div class="блок-ошибка" id="ошибкаВхода" hidden></div>
+        <button class="кнопка" id="кнопкаВхода">Войти</button>
+        <p class="тихо">Разблокировка запоминается на этом устройстве.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 2: НОВАЯ СЕМЬЯ -->
+  <section id="экранСемья" hidden>
+    <h1>Новая семья</h1>
+    <div class="карточка">
+      <h2>Документы родителя</h2>
+      <div id="слотПаспорт1"></div>
+      <div id="слотПаспорт2"></div>
+    </div>
+    <div class="карточка">
+      <h2>Свидетельства о рождении</h2>
+      <div id="списокДетей"></div>
+      <button class="кнопка вторичная" id="кнопкаЕщёРебёнок">+ ещё ребёнок</button>
+    </div>
+    <div class="карточка">
+      <h2>Данные семьи</h2>
+      <div class="поле">
+        <label for="вводТелефона">Телефон родителя</label>
+        <input type="tel" id="вводТелефона" inputmode="tel" placeholder="0555 123 456">
+      </div>
+      <div class="поле">
+        <label>Комплект документов</label>
+        <div class="переключатель" id="переключательКомплект">
+          <button type="button" data-значение="Полностью" class="выбран">Полностью</button>
+          <button type="button" data-значение="Частично">Частично</button>
+        </div>
+      </div>
+      <div class="поле">
+        <label for="вводПримечания">Примечание</label>
+        <input type="text" id="вводПримечания">
+      </div>
+    </div>
+    <div class="блок-ошибка" id="ошибкаОтправки" hidden></div>
+    <button class="кнопка" id="кнопкаОтправить">Отправить на распознавание</button>
+  </section>
+
+  <!-- ЭКРАН 3: ОЖИДАНИЕ -->
+  <section id="экранОжидание" hidden>
+    <div class="карточка ожидание">
+      <div class="волчок"></div>
+      <div class="этап-ожидания" id="этапОжидания">Отправляем файлы…</div>
+      <div class="секунды" id="секундыОжидания">0 сек</div>
+      <p class="тихо">Реалистично 20–60 секунд: паспорт + свидетельства. Не закрывайте приложение.</p>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 4: СВЕРКА -->
+  <section id="экранСверка" hidden>
+    <h1>Сверка с оригиналами</h1>
+    <div id="блокОшибокДокументов"></div>
+    <div id="карточкаРодителя"></div>
+    <div id="карточкиДетей"></div>
+    <div class="блок-ошибка" id="ошибкаПодтверждения" hidden></div>
+    <button class="кнопка" id="кнопкаПодтвердить">Подтвердить семью</button>
+    <button class="кнопка вторичная" id="кнопкаПозже">Сверить позже</button>
+  </section>
+
+  <!-- ЭКРАН 4б: ГОТОВО -->
+  <section id="экранГотово" hidden>
+    <div class="карточка готово">
+      <div class="галка">✓</div>
+      <h1 id="заголовокГотово">Готово</h1>
+      <p id="текстГотово" class="тихо"></p>
+      <button class="кнопка" id="кнопкаСледующая">Следующая семья</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 5: ОЧЕРЕДЬ -->
+  <section id="экранОчередь" hidden>
+    <h1 id="заголовокОчереди">Очередь: 0 семей</h1>
+    <p class="тихо">Семьи, принятые без сети, отправляются автоматически при появлении интернета.
+      Их сверка — отложенная, в реестре (статус РАСПОЗНАНО).</p>
+    <div class="карточка" id="списокОчереди"><p class="тихо">Очередь пуста.</p></div>
+    <button class="кнопка" id="кнопкаОтправитьОчередь">Отправить всё</button>
+  </section>
+
+</main>
+
+<div id="тост"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
