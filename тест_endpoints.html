@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ШКОЛА — тест сервера PWA (Этап 1)</title>
+<style>
+  :root { --green: #1b5e20; --light: #e8f5e9; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 16px;
+         background: #fafafa; color: #212121; max-width: 760px; margin-inline: auto; }
+  h1 { color: var(--green); font-size: 22px; }
+  h2 { color: var(--green); font-size: 17px; margin: 24px 0 8px; border-bottom: 2px solid var(--green); padding-bottom: 4px; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; font-size: 14px; }
+  input[type=text], input[type=url], select, textarea {
+    width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 8px; font-size: 15px; }
+  input[type=file] { font-size: 14px; }
+  textarea { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  button { background: var(--green); color: #fff; border: 0; border-radius: 10px;
+           padding: 12px 18px; font-size: 15px; font-weight: 600; margin: 12px 8px 0 0; cursor: pointer; }
+  button:disabled { background: #9e9e9e; }
+  button.sec { background: #fff; color: var(--green); border: 2px solid var(--green); }
+  .status { margin-top: 10px; padding: 10px; border-radius: 8px; background: var(--light);
+            font-size: 14px; white-space: pre-wrap; }
+  .err { background: #ffebee; color: #b71c1c; }
+  .hint { color: #616161; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>Тест сервера PWA «Приём документов — Школа»</h1>
+<p class="hint">Этап 1: проверка endpoints <b>recognize</b> и <b>confirm</b>. Страницу можно открыть двойным щелчком (file://) — работает без публикации.</p>
+
+<h2>0. Настройки</h2>
+<label>URL Web App (…/exec)</label>
+<input type="url" id="url" placeholder="https://script.google.com/macros/s/…/exec">
+<label>Токен (APP_TOKEN)</label>
+<input type="text" id="token" placeholder="строка из appGenerateToken()">
+<button class="sec" id="btnPing">Проверить связь (GET)</button>
+<div class="status" id="stPing" hidden></div>
+
+<h2>1. Пакет семьи → recognize</h2>
+<label>Паспорт — сторона 1 (обязательно)</label>
+<input type="file" id="pass1" accept="image/*,application/pdf">
+<label>Паспорт — сторона 2</label>
+<input type="file" id="pass2" accept="image/*,application/pdf">
+<label>СОР детей (1–5 файлов)</label>
+<input type="file" id="cors" accept="image/*,application/pdf" multiple>
+<label>Телефон родителя</label>
+<input type="text" id="phone" placeholder="0555 123 456">
+<label>Комплект</label>
+<select id="komplekt"><option>Полностью</option><option>Частично</option></select>
+<label>Примечание</label>
+<input type="text" id="remark">
+<button id="btnRec">Отправить на распознавание</button>
+<div class="status" id="stRec" hidden></div>
+
+<h2>2. Ответ сервера (можно править прямо в JSON) → confirm</h2>
+<textarea id="resp" rows="18" placeholder="Сюда придёт ответ recognize. Правьте значения в «поля» — так имитируется сверка оператором."></textarea>
+<label>Финальный статус</label>
+<select id="finStatus"><option>СВЕРЕНО</option><option>РАСПОЗНАНО</option></select>
+<button id="btnConf">Подтвердить семью (confirm)</button>
+<div class="status" id="stConf" hidden></div>
+
+<script>
+'use strict';
+// ── настройки запоминаются на устройстве ──
+const $ = id => document.getElementById(id);
+['url', 'token'].forEach(k => {
+  $(k).value = localStorage.getItem('тест_' + k) || '';
+  $(k).addEventListener('change', () => localStorage.setItem('тест_' + k, $(k).value.trim()));
+});
+
+function show(el, text, isErr) {
+  el.hidden = false; el.textContent = text; el.classList.toggle('err', !!isErr);
+}
+
+// ── файл → {имя, тип, base64}; изображения сжимаются до 1600px JPEG, PDF — как есть ──
+function fileToPacket(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve(null);
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Не удалось прочитать файл ' + file.name));
+    if (file.type === 'application/pdf') {
+      reader.onload = () => resolve({ имя: file.name, тип: 'application/pdf',
+        base64: String(reader.result).split(',')[1] });
+      reader.readAsDataURL(file);
+      return;
+    }
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1600;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve({ имя: file.name.replace(/\.\w+$/, '') + '.jpg', тип: 'image/jpeg',
+          base64: c.toDataURL('image/jpeg', 0.85).split(',')[1] });
+      };
+      img.onerror = () => reject(new Error('Файл не является изображением: ' + file.name));
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// POST без нестандартных заголовков (text/plain) — иначе браузер требует preflight,
+// который Apps Script не обслуживает.
+async function post(payload) {
+  const url = $('url').value.trim();
+  if (!url) throw new Error('Укажите URL Web App.');
+  const resp = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+  const text = await resp.text();
+  try { return JSON.parse(text); }
+  catch (e) { throw new Error('Сервер вернул не JSON (HTTP ' + resp.status + '): ' + text.slice(0, 300)); }
+}
+
+// ── 0. ping ──
+$('btnPing').onclick = async () => {
+  const st = $('stPing');
+  show(st, 'Запрашиваем…');
+  try {
+    const resp = await fetch($('url').value.trim());
+    show(st, JSON.stringify(await resp.json(), null, 2));
+  } catch (e) { show(st, 'Ошибка: ' + e.message, true); }
+};
+
+// ── 1. recognize ──
+$('btnRec').onclick = async () => {
+  const st = $('stRec'), btn = $('btnRec');
+  if (!$('pass1').files[0]) { show(st, 'Паспорт — сторона 1 обязателен.', true); return; }
+  const corFiles = [...$('cors').files];
+  if (corFiles.length > 5) { show(st, 'СОР — не больше 5 файлов.', true); return; }
+  btn.disabled = true;
+  const t0 = Date.now();
+  const timer = setInterval(() =>
+    show(st, 'Распознаём… ' + Math.round((Date.now() - t0) / 1000) + ' сек (реалистично 20–60 сек)'), 1000);
+  try {
+    show(st, 'Готовим файлы…');
+    const паспорт = (await Promise.all([fileToPacket($('pass1').files[0]),
+                                        fileToPacket($('pass2').files[0])])).filter(Boolean);
+    const свидетельства = await Promise.all(corFiles.map(fileToPacket));
+    const res = await post({
+      action: 'recognize', токен: $('token').value.trim(),
+      паспорт, свидетельства,
+      телефон: $('phone').value.trim(),
+      комплект: $('komplekt').value,
+      примечание: $('remark').value.trim()
+    });
+    clearInterval(timer);
+    $('resp').value = JSON.stringify(res, null, 2);
+    if (res.ok) {
+      show(st, 'Готово за ' + res.длительность_сек + ' сек. Родитель ID ' + res.родитель.ид +
+        ' (' + res.родитель.статус + '), детей: ' + res.дети.length +
+        (res.ошибки_документов.length ? '\nПроблемные документы: ' +
+          res.ошибки_документов.map(d => d.документ).join(', ') : '') +
+        '\nОтвет ниже — правьте «поля» и подтверждайте.');
+    } else show(st, 'Отказ сервера: ' + res.ошибка, true);
+  } catch (e) { clearInterval(timer); show(st, 'Ошибка: ' + e.message, true); }
+  btn.disabled = false;
+};
+
+// ── 2. confirm ──
+$('btnConf').onclick = async () => {
+  const st = $('stConf'), btn = $('btnConf');
+  let r;
+  try { r = JSON.parse($('resp').value); }
+  catch (e) { show(st, 'В поле ответа не корректный JSON: ' + e.message, true); return; }
+  if (!r.родитель) { show(st, 'В JSON нет объекта «родитель» — сначала выполните recognize.', true); return; }
+  btn.disabled = true;
+  show(st, 'Отправляем правки…');
+  try {
+    const res = await post({
+      action: 'confirm', токен: $('token').value.trim(),
+      статус: $('finStatus').value,
+      журнал_строка: r.журнал_строка || null,
+      родитель: { ид: r.родитель.ид, строка: r.родитель.строка, поля: r.родитель.поля,
+                  телефон: r.родитель.телефон, комплект: r.родитель.комплект },
+      дети: (r.дети || []).map(k => ({ ид: k.ид, строка: k.строка, поля: k.поля }))
+    });
+    if (res.ok) show(st, 'Записано: статус ' + res.статус + ', родитель ID ' + res.родитель.ид +
+      ', детей: ' + res.дети.length + '. Проверьте строки в реестре.');
+    else show(st, 'Отказ сервера: ' + res.ошибка, true);
+  } catch (e) { show(st, 'Ошибка: ' + e.message, true); }
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
