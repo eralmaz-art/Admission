@@ -161,6 +161,11 @@ h2 { font-size: 1.05rem; color: var(--синий-тёмный); margin: 0 0 10px
   font-size: 1.8rem; background: var(--синий-светлый); border-radius: 10px;
 }
 .превью-имя { font-size: 0.8rem; color: var(--текст-тихий); word-break: break-all; }
+.превью-удалить {
+  margin-left: auto; flex-shrink: 0;
+  background: none; border: 0; color: var(--ошибка);
+  font-size: 1.15rem; cursor: pointer; padding: 2px 8px;
+}
 
 /* переключатель Комплект */
 .переключатель { display: flex; gap: 0; border: 2px solid var(--синий); border-radius: 10px; overflow: hidden; }
@@ -202,6 +207,12 @@ h2 { font-size: 1.05rem; color: var(--синий-тёмный); margin: 0 0 10px
 .элемент-очереди + .элемент-очереди { border-top: 1px solid #E4EAF2; margin-top: 10px; padding-top: 10px; }
 .элемент-очереди .инфо { font-size: 0.9rem; }
 .элемент-очереди .инфо b { display: block; }
+.элемент-очереди .действия { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.удалить-семью {
+  background: none; border: 0; color: var(--ошибка);
+  font-size: 1.05rem; cursor: pointer; padding: 4px 6px;
+}
+.удалить-семью:disabled { opacity: 0.35; cursor: default; }
 
 /* ── сообщение-тост ── */
 #тост {
