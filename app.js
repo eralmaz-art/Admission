@@ -20,7 +20,7 @@
 'use strict';
 
 // ══════════════ НАСТРОЙКИ (заполняет заказчик) ══════════════
-const АДРЕС_СЕРВЕРА = 'https://script.google.com/macros/s/AKfycbybh0MT1d6VMpGIJPFHfhd_XHmIL00-Qg9_008Y6no_xGQOgQxuqlKAg-II133Be6Le/exec'; // https://script.google.com/macros/s/…/exec
+const АДРЕС_СЕРВЕРА = 'https://script.google.com/macros/s/AKfycbzB2ApRuUFKHiRmAmT9y65SH9dBAxFPb970vxDhckgrpZ2abR8Pe0QcKb7xWHRTDMot/exec'; // https://script.google.com/macros/s/…/exec
 const ТОКЕН         = 'b9de91bc8d4a40809d066f9a59e0eb04e1331d51b6d14f23b44a9dae657fd5bc';              // строка из appGenerateToken() на сервере
 
 // Сменить пароль: в консоли браузера выполнить
