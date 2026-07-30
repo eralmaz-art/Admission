@@ -1,5 +1,6 @@
 /**
  * ШКОЛА «СИЛКРОАД» — ПРИЁМНАЯ — стили (Этапы 2–3)
+ * Версия: К1.2 (доработка 2) • 30.07.2026.
  *
  * ДВА СЛОЯ ЦВЕТА, СТРОГО РАЗВЕДЕНЫ (ТЗ 1.1, §4):
  *  • Брендовый: глубокий синий/индиго #1B3C73–#2456A6 — шапка, кнопки, акценты;
@@ -166,6 +167,22 @@ h2 { font-size: 1.05rem; color: var(--синий-тёмный); margin: 0 0 10px
   background: none; border: 0; color: var(--ошибка);
   font-size: 1.15rem; cursor: pointer; padding: 2px 8px;
 }
+
+/* блок ребёнка: два слота СОР (лист 1 и лист 2) под общей шапкой */
+.блок-ребёнка {
+  border: 1.5px solid #D5DEEA; border-radius: 14px;
+  padding: 10px 12px; margin-bottom: 12px;
+}
+.блок-ребёнка-верх { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.блок-ребёнка-название { font-weight: 800; font-size: 0.95rem; color: var(--синий-тёмный); }
+.блок-ребёнка-удалить {
+  background: none; border: 0; color: var(--ошибка);
+  font-size: 1.15rem; cursor: pointer; padding: 2px 8px;
+}
+.блок-ребёнка .слот:last-child { margin-bottom: 0; }
+
+/* мягкая подсказка под полем (например, формат email) — не ошибка */
+.подсказка-поля { font-size: 0.78rem; color: var(--сигнал-оранж); margin-top: 4px; }
 
 /* переключатель Комплект */
 .переключатель { display: flex; gap: 0; border: 2px solid var(--синий); border-radius: 10px; overflow: hidden; }
